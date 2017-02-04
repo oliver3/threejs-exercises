@@ -1,0 +1,13 @@
+{
+  "name": "threejs-manual",
+  "version": "1.0.0",
+  "main": "dist/app.js",
+  "scripts": {},
+  "dependencies": {
+    "@types/three": "^0.83.1",
+    "three": "^0.84.0"
+  },
+  "devDependencies": {
+    "typescript": "~2.1.5"
+  }
+}

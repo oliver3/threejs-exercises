@@ -1,13 +1,13 @@
 (function () {
     function Camera() {
         const camera = new THREE.PerspectiveCamera(
-            75,                                   // Field of view
+            70,                                   // Field of view
             window.innerWidth / window.innerHeight, // Aspect ratio
             0.1,                                  // Near clipping pane
             1000                                  // Far clipping pane
         );
         // Reposition the camera
-        camera.position.set(5, 5, 0);
+        camera.position.set(60, 60, 0);
 
         // Point the camera at a given coordinate
         camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -43,40 +43,61 @@
 
         shadowMaterial.opacity = 0.5;
         const groundMesh = new THREE.Mesh(
-            new THREE.BoxGeometry( 100, .1, 100 ),
+            new THREE.BoxGeometry(100, .1, 100),
             shadowMaterial
         );
         groundMesh.receiveShadow = true;
 
         return groundMesh;
-
     }
 
     const renderer = Renderer();
 
     const camera = Camera();
 
-    // const cube = Cube(10, 0x00aaaa);
-    //
-    // const line = Line(0x0000ff);
+    function Decoration() {
+        const decoration = new THREE.Group();
 
-    function ShapeOne() {
-        const geometry = new THREE.OctahedronGeometry(10,1);
+        // A random color assignment
+        const colors = ['#ff0051', '#f56762', '#a53c6c', '#f19fa0', '#72bdbf', '#47689b'];
 
-        const material = new THREE.MeshStandardMaterial( {
-            color: 0xff0051,
-            shading: THREE.FlatShading, // default is THREE.SmoothShading
-            metalness: 0,
-            roughness: 1
-        } );
+        // The main bauble is an Octahedron
+        const bauble = new THREE.Mesh(
+            new THREE.OctahedronGeometry(12, 1),
+            new THREE.MeshStandardMaterial({
+                color: colors[Math.floor(Math.random() * colors.length)],
+                shading: THREE.FlatShading,
+                metalness: 0,
+                roughness: 1
+            })
+        );
+        bauble.castShadow = true;
+        bauble.receiveShadow = true;
+        bauble.rotateZ(Math.random() * Math.PI * 2);
+        bauble.rotateY(Math.random() * Math.PI * 2);
 
-        const shapeOne = new THREE.Mesh(geometry, material);
-        shapeOne.position.y += 10;
+        decoration.add(bauble);
+
+        // A cylinder to represent the top attachment
+        const shapeOne = new THREE.Mesh(
+            new THREE.CylinderGeometry(4, 6, 10, 6, 1),
+            new THREE.MeshStandardMaterial({
+                color: 0xf8db08,
+                shading: THREE.FlatShading,
+                metalness: 0,
+                roughness: 1
+            })
+        );
+        shapeOne.position.y += 8;
         shapeOne.castShadow = true;
         shapeOne.receiveShadow = true;
+        decoration.add(shapeOne);
 
-        return shapeOne
+        decoration.position.y += 12;
+
+        return decoration;
     }
+
 
     function AmbientLight() {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
@@ -92,12 +113,34 @@
         return pointLight
     }
 
-    const scene = Scene(Plane(), ShapeOne(), AmbientLight(), PointLight());
+    const decorations = [[-10, -20], [10, 10]].map(([x, z]) => {
+        const d = Decoration();
+        d.position.x += x;
+        d.position.z += z;
+        return d;
+    });
+
+    const scene = Scene(Plane(), AmbientLight(), PointLight(), ...decorations);
 
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.addEventListener('change', () => { renderer.render(scene, camera); });
 
-    renderer.render(scene, camera);
+    function render() {
+        // Update camera position based on the controls
+        controls.update();
+
+        // Loop through items in the scene and update their position
+        decorations.forEach((d) => {
+            d.rotation.y += 0.01;
+        });
+
+        // Re-render the scene
+        renderer.render(scene, camera);
+
+        // Loop
+        requestAnimationFrame(render);
+    }
+
+    render();
 
 })();

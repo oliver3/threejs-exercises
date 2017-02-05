@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Aviator</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        /*canvas {
+            width: 100%;
+            height: 100%
+        }*/
+
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+            display:block;
+            font-size: 36px;
+        }
+
+        #world {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(#e4e0ba, #f7d9aa);
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">Aviator</div>
+
+<div id="world"></div>
+
+<script src="../../node_modules/three/build/three.js"></script>
+<!--<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>-->
+<script src="app.js"></script>
+
+</body>
+</html>
